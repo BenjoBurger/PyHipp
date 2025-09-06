@@ -12,6 +12,12 @@
 #SBATCH -o rplhighpass-slurm.%N.%j.out # STDOUT
 #SBATCH -e rplhighpass-slurm.%N.%j.err # STDERR
 
+# Get env
+/data/miniconda3/bin/conda init
+source ~/.bashrc
+envarg=`/data/src/PyHipp/envlist.py`
+conda activate $envarg
+
 # LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
 python -u -c "import PyHipp as pyh; \
 import time; \
@@ -22,4 +28,8 @@ from PyHipp import export_mountain_cells; \
 export_mountain_cells.export_mountain_cells(); \
 print(time.localtime());"
 
-aws sns publish --topic-arn arn:aws:sns:ap-southeast-1:206333089166:awsnotify --message "RPLHighPass"
+# Exit env
+conda deactivate
+/data/src/PyHipp/envlist.py $envarg
+
+aws sns publish --topic-arn arn:aws:sns:ap-southeast-1:637224115590:awsnotify --message "RPLHighPass"
